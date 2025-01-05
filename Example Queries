@@ -1,0 +1,172 @@
+Here is a comprehensive list of SQL queries included in the **Student Management System - SQL Case Study**. 
+These queries cover a variety of scenarios for data manipulation, analysis, and performance evaluation.
+
+---
+
+### 1. **Retrieve Specific Data**
+- **Find the list of students with a specific `StudentID` and `Age`:**
+  ```sql
+  SELECT StudentID, Age 
+  FROM `student_performance_data`
+  WHERE StudentID = 1001 AND Age = 17;
+  ```
+
+- **List students of a certain age across different IDs:**
+  ```sql
+  SELECT StudentID, Age 
+  FROM `student_performance_data`
+  WHERE Age = 17;
+  ```
+
+---
+
+### 2. **Filter Data**
+- **Exclude Specific Students:**
+  ```sql
+  SELECT * 
+  FROM `student_performance_data`
+  WHERE StudentID NOT IN (1003, 1004);
+  ```
+
+- **Find names starting with "P":**
+  ```sql
+  SELECT first_name 
+  FROM `student-details`
+  WHERE first_name LIKE 'P%';
+  ```
+
+---
+
+### 3. **Aggregate Queries**
+- **Maximum and Minimum Math Scores:**
+  ```sql
+  SELECT MAX(math_score), MIN(math_score) 
+  FROM `students score`;
+  ```
+
+- **Sum of Writing Scores:**
+  ```sql
+  SELECT SUM(writing_score) 
+  FROM `students score`;
+  ```
+
+- **Average Placement Score:**
+  ```sql
+  SELECT AVG(placement_score) 
+  FROM `students score`;
+  ```
+
+---
+
+### 4. **Sorting and Grouping**
+- **Alphabetical Order of Names:**
+  ```sql
+  SELECT first_name, last_name 
+  FROM `student-details`
+  ORDER BY first_name, last_name;
+  ```
+
+- **Unique Names in the Table:**
+  ```sql
+  SELECT DISTINCT first_name, last_name 
+  FROM `student-details`;
+  ```
+
+---
+
+### 5. **Conditional Queries**
+- **Categorize Math Scores into Grades:**
+  ```sql
+  SELECT Math_Score,
+         CASE
+             WHEN Math_Score >= 90 THEN 'A'
+             WHEN Math_Score >= 80 THEN 'B'
+             WHEN Math_Score >= 70 THEN 'C'
+             WHEN Math_Score >= 60 THEN 'D'
+             ELSE 'F'
+         END AS Grade
+  FROM `students score`
+  ORDER BY Grade;
+  ```
+
+- **Find Second Highest GPA:**
+  ```sql
+  SELECT MAX(GPA)
+  FROM `students data`
+  WHERE GPA NOT IN (SELECT MAX(GPA) FROM `students data`);
+  ```
+
+---
+
+### 6. **Joining Tables**
+- **Combine Data from Two Tables:**
+  ```sql
+  SELECT DISTINCT s.first_name, p.parental_level_of_education
+  FROM studentsperformance s
+  LEFT JOIN `student-details` p ON s.gender = p.gender
+  ORDER BY s.first_name;
+  ```
+
+---
+
+### 7. **Ranking**
+- **Rank Students by History Scores:**
+  ```sql
+  SELECT first_name, history_score,
+         DENSE_RANK() OVER (ORDER BY history_score DESC) AS Rank
+  FROM `student-details`
+  LIMIT 100;
+  ```
+
+- **Students with Second Highest English Scores (Grouped by Gender):**
+  ```sql
+  WITH CTE AS (
+      SELECT first_name, english_score,
+             DENSE_RANK() OVER (PARTITION BY gender ORDER BY english_score DESC) AS Rank
+      FROM `student-details`
+  )
+  SELECT * 
+  FROM CTE
+  WHERE Rank = 2;
+  ```
+
+---
+
+### 8. **Handling Absences**
+- **Find Students with Absences Greater Than 20 Days:**
+  ```sql
+  WITH AbsenceData AS (
+      SELECT StudentID, SUM(absences) AS TotalAbsences
+      FROM `student_performance_data`
+      GROUP BY StudentID
+  )
+  SELECT * 
+  FROM AbsenceData
+  WHERE TotalAbsences > 20;
+  ```
+
+---
+
+### 9. **Last Records and Odd Rows**
+- **Last Five Records by ID:**
+  ```sql
+  SELECT * 
+  FROM (
+      SELECT * 
+      FROM `student_performance_data`
+      ORDER BY StudentID DESC
+      LIMIT 5
+  ) AS SubQuery
+  ORDER BY StudentID;
+  ```
+
+- **Show Odd Rows Only:**
+  ```sql
+  SELECT * 
+  FROM `students data`
+  WHERE StudentID % 2 = 1;
+  ```
+
+---
+
+These queries showcase SQL's versatility for data management and analysis.
